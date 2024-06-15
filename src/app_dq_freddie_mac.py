@@ -10,12 +10,12 @@ conf = ReadSettings()
 
 st.set_page_config(layout="wide")
 
-dir = conf.freddie_mac_dir
+freddie_mac_dir = conf.freddie_mac_dir
 loancol = conf.loancol
 datecol = conf.datecol
 dq_subdir = conf.dq_subdir
 
-dq_dir = os.path.join(dir, dq_subdir)
+dq_dir = os.path.join(freddie_mac_dir, dq_subdir)
 
 
 @st.cache_data
@@ -25,8 +25,8 @@ def load_variable_data(varname):
     """
     vmap = var_map[varname]
 
-    # df = pd.read_parquet(os.path.join(dq_dir, vmap['parquet_name']))
-    df = pd.read_csv(os.path.join(dq_dir, vmap['csv_name']))
+    df = pd.read_parquet(os.path.join(dq_dir, vmap['parquet_name']))
+    # df = pd.read_csv(os.path.join(dq_dir, vmap['csv_name']))
     
     # Set the Date column type to string to make sure it is treated as a categorical variable
     df['Date'] = df['Date'].astype(str)
@@ -158,13 +158,8 @@ def setup_sidebar():
 
     # Variable selectbox
     varname = st.sidebar.selectbox('**Variable**', var_map.keys())
-    
-    # df = load_variable_data(varname)
-    
-    vmap = var_map[varname]
-    df = pd.read_csv(os.path.join(dq_dir, vmap['csv_name']))
-    # Set the Date column type to string to make sure it is treated as a categorical variable
-    df['Date'] = df['Date'].astype(str)
+
+    df = load_variable_data(varname)
     dates = df['Date']
 
     # Metric selectbox
