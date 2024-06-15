@@ -25,7 +25,8 @@ def load_variable_data(varname):
     """
     vmap = var_map[varname]
 
-    df = pd.read_parquet(os.path.join(dq_dir, vmap['fname']))
+    # df = pd.read_parquet(os.path.join(dq_dir, vmap['parquet_name']))
+    df = pd.read_csv(os.path.join(dq_dir, vmap['csv_name']))
     
     # Set the Date column type to string to make sure it is treated as a categorical variable
     df['Date'] = df['Date'].astype(str)

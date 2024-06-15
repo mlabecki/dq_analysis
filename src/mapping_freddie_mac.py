@@ -10,7 +10,8 @@ main_settings = {
     'loancol': 'Loan Sequence Number'
 }
 upb_map = {
-    'fname': 'Current_Actual_UPB_201701_202312_DQ.parquet',
+    'parquet_name': 'Current_Actual_UPB_201701_202312_DQ.parquet',
+    'csv_name': 'Current_Actual_UPB_201701_202312_DQ.csv',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 2e7,
     'nullcount_y_max': 2e7,
@@ -25,7 +26,8 @@ upb_map = {
     'pct_y_max': 700000
 }
 ltv_map = {
-    'fname': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.parquet',
+    'parquet_name': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.parquet',
+    'csv_name': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.csv',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 2e7,
     'nullcount_y_max': 2e7,
@@ -40,7 +42,8 @@ ltv_map = {
     'pct_y_max': 105
 }
 exp_map = {
-    'fname': 'Total_Expenses_201701_202312_DQ.parquet',
+    'parquet_name': 'Total_Expenses_201701_202312_DQ.parquet',
+    'csv_name': 'Total_Expenses_201701_202312_DQ.csv',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 10000,
     'nullcount_y_max': 2e7,
