@@ -1,0 +1,12 @@
+dir: 'D:\\Python\\DQ_exercises\\DQ_exercises\\downloads\\freddie_mac\\standard'
+
+layout_file: 'READ_ME\\time_data_layout.csv'
+quarterly_file_prefix: 'historical_data_time_'
+monthly_file_prefix: 'all_loans_'
+dq_subdir: 'dq_tables'
+min_extract_date: 201701
+max_extract_date: 202312
+
+datecol: 'Monthly Reporting Period'
+loancol: 'Loan Sequence Number'
+
