@@ -77,14 +77,14 @@ and/ or disposing a property (excluding selling expenses, which are subtracted
 from gross sales proceeds to derive net sales proceeds). This is an
 aggregation of Legal Costs, Maintenance and Preservation."""
 }
-
-# Lists
 grid_map = {
     'X and Y': 'both',
     'X': 'x',
     'Y': 'y',
     'None': None
 }
+
+# Lists
 metric_list = [
     'Fill Rate',
     'Null Count',

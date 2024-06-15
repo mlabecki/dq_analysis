@@ -7,7 +7,7 @@ class ReadYaml:
         
         self.src_dir = os.getcwd()
         self.root_dir = os.path.join(self.src_dir, '..')
-        self.freddie_mac_dir = os.path.join(self.root_dir, 'downloads/freddie_mac/standard')
+        self.freddie_mac_dir = os.path.join(self.root_dir, 'data/freddie_mac/standard')
         self.config_file = os.path.join(self.root_dir, 'cfg', 'freddie_mac.yaml')
         self.conf = yaml.safe_load(open(self.config_file))
 
