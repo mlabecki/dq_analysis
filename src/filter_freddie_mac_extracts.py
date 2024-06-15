@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from prepare_settings import ReadSettings
 
 """
 Because of a syntactic error in extract_freddie_mac_monthly, all but one 
@@ -7,15 +8,18 @@ extract for a given year got contaminated with other months for that date.
 This script fixes that.
 """
 
-varcol = 'Current Actual UPB'  # Unpaid balance or outstanding
-varcol_fname = varcol.replace(' ', '_')
-datecol = 'Monthly Reporting Period'
-dir = 'D:\\Python\\DQ_exercises\\DQ_exercises\\downloads\\freddie_mac\\standard'
-var_dir = os.path.join(dir, varcol_fname)
+conf = ReadSettings()
+
+datecol = conf['datecol']
+dir = conf['freddie_mac_dir']
+
+varname = 'Current Actual UPB'  # Unpaid balance or outstanding
+varname_fname = varname.replace(' ', '_')
+var_dir = os.path.join(dir, varname_fname)
 
 years = [2018, 2019, 2020, 2021, 2022, 2023]
          
-end_fname = f'_{varcol_fname}.parquet'
+end_fname = f'_{varname_fname}.parquet'
 
 for year in years:
     

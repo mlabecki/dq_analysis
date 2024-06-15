@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from mapping_freddie_mac import *
 from convert_date import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
 
 """
@@ -22,7 +22,7 @@ The output file name starts with the monthly file prefix of 'all_loans_'.
 TO-DO: Re-organize code to handle hard-coded variables and parameters, e.g. varcol, ym_list.
 """
 
-conf = ReadYaml()
+conf = ReadSettings()
 
 dir = conf.freddie_mac_dir
 loancol = conf.loancol

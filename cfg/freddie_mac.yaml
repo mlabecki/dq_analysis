@@ -1,4 +1,4 @@
-layout_file: 'READ_ME\\time_data_layout.csv'
+layout_file: 'time_data_layout.csv'
 quarterly_file_prefix: 'historical_data_time_'
 monthly_file_prefix: 'all_loans_'
 dq_subdir: 'dq_tables'

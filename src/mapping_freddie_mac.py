@@ -1,4 +1,14 @@
 # Dictionaries
+main_settings = {
+    'layout_file': 'time_data_layout.csv',
+    'quarterly_file_prefix': 'historical_data_time_',
+    'monthly_file_prefix': 'all_loans_',
+    'dq_subdir': 'dq_tables',
+    'min_extract_date': 201701,
+    'max_extract_date': 202312,
+    'datecol': 'Monthly Reporting Period',
+    'loancol': 'Loan Sequence Number'
+}
 upb_map = {
     'fname': 'Current_Actual_UPB_201701_202312_DQ.parquet',
     'totalcount_y_max': 2e7,

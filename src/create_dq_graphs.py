@@ -4,9 +4,9 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from mapping_freddie_mac import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
-conf = ReadYaml()
+conf = ReadSettings()
 
 st.set_page_config(layout="wide")
 

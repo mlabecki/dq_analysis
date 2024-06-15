@@ -2,13 +2,13 @@ import pandas as pd
 import os
 from convert_date import *
 from mapping_freddie_mac import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
 class FreddieMac:
     
     def __init__(self):
         
-        self.conf = ReadYaml()
+        self.conf = ReadSettings()
         self.dir = self.conf.freddie_mac_dir
         self.layout_file = self.conf.layout_file
         self.quarterly_file_prefix = self.conf.quarterly_file_prefix

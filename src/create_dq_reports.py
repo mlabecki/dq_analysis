@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 import os
 from mapping_freddie_mac import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
-conf = ReadYaml()
+conf = ReadSettings()
 
 dir = conf.freddie_mac_dir
 dq_subdir = conf.dq_subdir

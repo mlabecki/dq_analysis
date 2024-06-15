@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from convert_date import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
 
 """
@@ -16,7 +16,7 @@ a 15 GB output for Current UPB. This approach was abandoned for the other variab
 (Estimated LTV and Total Expenses).
 """
  
-conf = ReadYaml()
+conf = ReadSettings()
 
 dir = conf.freddie_mac_dir
 loancol = conf.loancol

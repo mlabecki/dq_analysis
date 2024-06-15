@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 from convert_date import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
 """
 NOTE: Not used in the final approach.
@@ -22,7 +22,7 @@ extract all sets of monthly data and add them to existing monthly extract files.
 Output file name: yyyymm_variable.parquet
 """
 
-conf = ReadYaml()
+conf = ReadSettings()
 
 dir = conf.freddie_mac_dir
 loancol = conf.loancol

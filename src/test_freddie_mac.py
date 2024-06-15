@@ -1,18 +1,16 @@
 import pandas as pd
 import os
 from convert_date import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
-conf = ReadYaml()
+conf = ReadSettings()
 
-dir = conf.dir
-layout_file = conf.layout_file
+dir = conf.freddie_mac_dir
+layout_path = conf.layout_file
 quarterly_file_prefix = conf.quarterly_file_prefix
 
-lpath = os.path.join(dir, layout_file)
-
 # Process the data layout file, include only selected variables marked with the INCLUDE flag equal to 1
-ldf = pd.read_csv(lpath)
+ldf = pd.read_csv(layout_path)
 allcols = [col for col in ldf['ATTRIBUTE NAME']]
 cols = [col for col in ldf.loc[ldf['INCLUDE'] == 1, 'ATTRIBUTE NAME']]
 dtype_dict = pd.Series(ldf['DTYPE'].values, index=ldf['ATTRIBUTE NAME']).to_dict()
