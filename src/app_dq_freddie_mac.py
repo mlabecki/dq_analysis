@@ -158,7 +158,13 @@ def setup_sidebar():
 
     # Variable selectbox
     varname = st.sidebar.selectbox('**Variable**', var_map.keys())
-    df = load_variable_data(varname)
+    
+    # df = load_variable_data(varname)
+    
+    vmap = var_map[varname]
+    df = pd.read_csv(os.path.join(dq_dir, vmap['csv_name']))
+    # Set the Date column type to string to make sure it is treated as a categorical variable
+    df['Date'] = df['Date'].astype(str)
     dates = df['Date']
 
     # Metric selectbox
