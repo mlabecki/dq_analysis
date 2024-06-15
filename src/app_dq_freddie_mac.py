@@ -23,6 +23,7 @@ def load_variable_data(varname):
     """
     varname:    variable for which to load data
     """
+
     vmap = var_map[varname]
 
     df = pd.read_parquet(os.path.join(dq_dir, vmap['parquet_name']))
@@ -49,9 +50,10 @@ def plot_pct(
     start_date and end_date are strings, so 'Date' can be treated as a categorical variable
     """
     
+    # Get the map for the variable varname
     vmap = var_map[varname]
 
-    # Set x- and y-axis limits for each variable to be plotted
+    # Set x- and y-axis limits
     x_min = start_date
     x_max = end_date
     y_min = vmap['pct_y_min']
@@ -139,12 +141,27 @@ def plot_metric(
     st.pyplot(fig)
 
 
-def squeeze(char: str, s: str):
+def squeeze(c: str, s: str):
     """
-    Removes repeated instances of character char from string s
+    Removes repeated instances of character c from string s.
+    Used by setup_main_area() to correctly style the title based on a css template.
+    
+    The css template is defined in mapping_freddie_mac.py and refers to the title 
+    object id, which is generically set to 'title' (preceded by '#'). The title 
+    object id is constructed in html by converting to lower case, replacing spaces
+    with hyphens, and also by removing repeated instances of the hyphen, if present.
+    
+    In this case, the title is 'Freddie Mac Loan Portfolio - Data Quality Analysis',
+    which contains ' - '. The role of the squeeze function is to reduce the '---',
+    resulting from a simple replacement of spaces with hyphens, to a single '-'.
+    
+    Once correctly constructed, the object id of 'title' in the css template
+    is replaced by the object id of 'freddie-mac-loan-portfolio-data-quality-summary'.
     """
-    while char*2 in s:
-        s = s.replace(char*2, char)
+
+    while c*2 in s:
+        s = s.replace(c*2, c)
+    
     return s
 
 
