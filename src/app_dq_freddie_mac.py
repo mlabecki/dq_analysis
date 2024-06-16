@@ -166,7 +166,8 @@ def squeeze(c: str, s: str):
     resulting from a simple replacement of spaces with hyphens, to a single '-'.
     
     Once correctly constructed, the object id of 'title' in the css template
-    will be replaced by the object id of 'freddie-mac-loan-portfolio-data-quality-summary'.
+    is replaced by the object id of 'freddie-mac-loan-portfolio-data-quality-summary',
+    thereby rendering the style of the title as desired.
     """
 
     while c*2 in s:
