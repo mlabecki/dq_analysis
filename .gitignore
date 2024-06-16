@@ -1,5 +1,4 @@
 
-__pycache__/
-.ipynb_checkpoints/
+src/__pycache__/
+src/.ipynb_checkpoints/
 src/dq_analysis.code-workspace
-
