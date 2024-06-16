@@ -147,16 +147,26 @@ def squeeze(c: str, s: str):
     Used by setup_main_area() to correctly style the title based on a css template.
     
     The css template is defined in mapping_freddie_mac.py and refers to the title 
-    object id, which is generically set to 'title' (preceded by '#'). The title 
-    object id is constructed in html by converting to lower case, replacing spaces
-    with hyphens, and also by removing repeated instances of the hyphen, if present.
+    object id, which is generically set to 'title' (preceded by '#'):
+    <style>
+        #title {
+        text-align: center;
+        vertical-align: top;
+        font-face: serif;
+        font-size: 36px;
+        font-weight: bold;
+        color: black;
+    }
+    </style>
+    The title object id is constructed in html by converting to lower case, replacing
+    spaces with hyphens, and also removing repeated instances of the hyphen, if present.
     
     In this case, the title is 'Freddie Mac Loan Portfolio - Data Quality Analysis',
     which contains ' - '. The role of the squeeze function is to reduce the '---',
     resulting from a simple replacement of spaces with hyphens, to a single '-'.
     
     Once correctly constructed, the object id of 'title' in the css template
-    is replaced by the object id of 'freddie-mac-loan-portfolio-data-quality-summary'.
+    will be replaced by the object id of 'freddie-mac-loan-portfolio-data-quality-summary'.
     """
 
     while c*2 in s:
