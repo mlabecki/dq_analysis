@@ -1,5 +1,5 @@
 # dq_analysis - Data Quality Analysis
-The purpose of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes. This could be helpful in the detection of possible temporal discontinuities, anomalies and other data quality issues. Please click the screenshot below to access the app on Streamlit.
+The purpose of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes. This could be helpful in the detection of possible temporal discontinuities, anomalies and other data quality issues. Please click the screenshot below to access the dashboard app on Streamlit.
 
 [<img src='img/freddie_mac/00_AppScreenshot_1000x432.jpg'>](https://mlabecki-dq-analysis-srcapp-dq-freddie-mac-aeizer.streamlit.app)
 
