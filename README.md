@@ -1,5 +1,5 @@
 # dq_analysis - Data Quality Analysis
-The purpose of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes. This could be helpful in the detection of possible temporal discontinuities, anomalies and other data quality issues. Please click the screenshot below to access the dashboard app on Streamlit.
+The purpose of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes. This could be helpful in the detection of possible temporal discontinuities and other anomalies related to data quality. Please click the screenshot below to access the dashboard app on Streamlit.
 
 [<img src='img/freddie_mac/00_AppScreenshot_1000x432.jpg'>](https://mlabecki-dq-analysis-srcapp-dq-freddie-mac-aeizer.streamlit.app)
 
@@ -9,7 +9,7 @@ Freddie Mac single-family loan-level dataset, chosen for this project, was downl
 > ###### Screenshot of single-family quarterly loan dataset links at Freddie Mac download site
 > ![](img/freddie_mac/01_StandardDataSet_screenshot_600x160.png)
 
-Each quarterly txt file contained monthly data pertaining to the loans originated at that particular fiscal quarter, including the loan's full history until December 2023, which is the last monthly date in the dataset. For example, **historical_data_time_2023Q3.txt** would contain data for each loan originated at August, September or October 2023, starting at the year/month of origination and continuing monthly onwards until December 2023. On average, there would be over 25 million records and almost half a million unique loans in each quarterly file, adding up to over 2.5 billion records and almost 47 million unique loans for all periods combined.
+Each quarterly txt file contained monthly data pertaining to the loans originated at that particular fiscal quarter, including the loan's full history until December 2023, which is the last monthly date in the dataset. For example, **historical_data_time_2020Q3.txt** would contain data for all loans originated at August, September or October 2020, starting at the year/month of origination and continuing monthly onwards until December 2023. On average, there would be over 25 million records and almost half a million unique loans in each quarterly file, adding up to over 2.5 billion records and almost 47 million unique loans for all periods combined.
 
 ### 2. Data Wrangling
 The quarterly txt files were pipe-separated and contained no header; the column names and types were instead provided in a separate Excel file, saved here in an enhanced form as **cfg/time_data_layout.csv**. The task of reformatting the txt file into a dataframe was handled by the **reformat_original_data()** function of the FreddieMac class in src/prepare_data.py. 
