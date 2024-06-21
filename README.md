@@ -12,21 +12,25 @@ Freddie Mac single-family loan-level dataset, chosen for this project, was downl
 Each quarterly txt file contained monthly data pertaining to the loans originated at that particular fiscal quarter, including the loan's full history until December 2023, which is the last monthly date in the dataset. For example, **historical_data_time_2023Q3.txt** would contain data for each loan originated at August, September or October 2023, starting at the year/month of origination and continuing monthly onwards until December 2023. On average, there would be over 25 million records and almost half a million unique loans in each quarterly file, adding up to over 2.5 billion records and almost 47 million unique loans for all periods combined.
 
 ### 2. Data Wrangling
-The quarterly txt files were pipe-separated and contained no header, which was provided in a separate Excel file (**file_layout.xlsx**). This required reformatting the txt file into a dataframe with column names, a task handled by the **reformat_original_data()** function of the FreddieMac class in src/prepare_data.py. 
+The quarterly txt files were pipe-separated and contained no header; the column names and types were instead provided in a separate Excel file, saved here in an enhanced form as **cfg/time_data_layout.csv**. The task of reformatting the txt file into a dataframe was handled by the **reformat_original_data()** function of the FreddieMac class in src/prepare_data.py. 
 
-> ###### Sample of time series loan data file in the original pipe-separated format
+> ###### Sample of quarterly loan data file in the original pipe-separated format
 > ![](img/freddie_mac/02_PipeSeparatedFile_screenshot.png)
 
-> ###### Sample of the same data file reformatted and saved as parquet
+> ###### Sample of the quarterly data file reformatted and saved as parquet
 > ![](img/freddie_mac/03_ReformattedFile_screenshot.png)
-
-[comment]: # "Comment on the variables, compare pandas vs pyarrow with respect to runtime and parquet file size"
 
 An initial attempt to aggregate all time series data into a single file was quickly abandoned due to hitting memory limits, even just for a single variable (loan attribute). In the next attempt, the quarterly files were looped over to extract monthly data that would then be progressively appended to each monthly extract for the selected variable. That approach eliminated the memory problems but suffered from the limitation of including only a subset of loans present in the portfolio at each date until all quarterly files were processed, which would be a lengthy task taking many hours to complete. 
 
-Eventually, the monthly data was extracted by looping over all quarterly files inside a loop over dates (yyyymm), which was executed by the **extract_monthly_by_month()** function of the FreddieMac class. This approach offered the convenience of splitting the extraction process into monthly batches and also allowed to limit the range of the data selected for plotting by setting the start and end dates, in this case 201701 and 202312. As an example, the 201701 monthly extract would contain almost 10 million records with just as many loans, all of them originated between January 1999 and January 2017.
+Eventually, the monthly data was extracted by looping over all quarterly files inside a loop over dates (yyyymm), which was executed by the **extract_monthly_by_month()** function of the FreddieMac class. This approach offered the convenience of splitting the extraction process into monthly batches and also allowed to limit the range of the data selected for plotting by setting the start and end dates - in this case 201701 and 202312. As an example, the 201701 monthly extract would contain almost 10 million records with just as many loans, all of them originated between January 1999 and January 2017.
 
 > ###### Sample of monthly loan data file for Current Actual Unpaid Balance (UPB) at January 2017
 > ![](img/freddie_mac/04_UPB_201701_File.png)
 
-It was not necessary to convert the date column, **Monthly Reporting Period**, from integer to datetime datetime type, as it could be sorted as is. However, it was converted to string so it could be treated as a categorical variable in the plots - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of one year and January of the following year.
+All extract files, both quarterly and monthly, were saved on disk in the parquet format - initially using pandas and later with pyarrow. The latter offered a speed improvement by a factor of 1.7-3.0 while also reducing almost two-fold the size of parquet files on disk.
+
+It was not necessary to convert the date column, **Monthly Reporting Period**, from integer to datetime for the purpose of plotting, as the sort order would be preserved for both data types. However, the column had to be converted from integer to string so it could be treated as a categorical variable - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of one year and January of the following year. Conversion to string would also be faster and easier to implement than conversion to datetime.
+
+
+
+[comment]: # "Comment on the variables selected"
