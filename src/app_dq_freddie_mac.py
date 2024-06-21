@@ -209,7 +209,7 @@ def setup_sidebar():
     legend_location = st.sidebar.selectbox('**Legend Location**', legend_locations).lower()
 
     # Variable Description
-    st.sidebar.container(height=5, border=False)
+    st.sidebar.container(height=0, border=False)  # Can increase height, if needed
     st.sidebar.markdown(variable_description_style, unsafe_allow_html=True)
     st.sidebar.markdown("<div>Variable Description</div>", unsafe_allow_html=True)
     st.sidebar.markdown("<p style='font-size: 16px; line-height: 1.25'>" + var_desc_map[varname] + "</p>", unsafe_allow_html=True)
