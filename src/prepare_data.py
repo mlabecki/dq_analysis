@@ -444,7 +444,7 @@ class FreddieMac:
 
             start_time = time.perf_counter()
 
-            dname = self.monthly_file_prefix + str(ym) + '_' + varname_fname + '_pandas.parquet'
+            dname = self.monthly_file_prefix + str(ym) + '_' + varname_fname + '.parquet'
             print(f'    Saving {dname}')
             pq.write_table(df, os.path.join(var_dir, dname))
 
@@ -502,8 +502,7 @@ class FreddieMac:
 
                 print(f'Extracting {ym} data from {pname}')
                 ppath = os.path.join(self.fm_dir, pname)
-                fr = pd.read_parquet(ppath)
-                fr = fr.loc[fr[self.datecol]==ym, selected_cols]
+                fr = pd.read_parquet(ppath, columns=selected_cols, filters=[(self.datecol, '=', ym)])
                 df = pd.concat([df, fr])
 
             dname = self.monthly_file_prefix + str(ym) + '_' + varname_fname + '.parquet'
