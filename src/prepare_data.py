@@ -384,8 +384,8 @@ class FreddieMac:
         generated monthly extracts. Also any monthly batch run can be restarted if the code 
         execution gets interrupted in any way. Memory problems should not occur because each 
         monthly extract saved to disk is relatively small (< 200 MB). 
-        The output file name starts with the monthly file prefix of 'all_loans_'.
-
+        The output file name starts with the monthly file prefix of 'all_loans_'. Each output 
+        parquet file is about half the size of the equivalent file produced using pandas.
         """
 
         varname_fname = varname.replace(' ', '_').replace(')', '').replace('(', '')

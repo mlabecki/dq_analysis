@@ -9,14 +9,15 @@ Freddie Mac single-family loan-level dataset, chosen for this project, was downl
 > ###### Screenshot of single-family quarterly loan dataset links at Freddie Mac download site
 > ![](img/freddie_mac/01_StandardDataSet_screenshot_600x160.png)
 
-Each quarterly txt file contained monthly data pertaining to the loans originated at that particular fiscal quarter, including the loan's full history until December 2023, which is the last monthly date in the dataset. For example, **historical_data_time_2023Q3.txt** would contain data for each loan originated at August, September or October 2023, starting at the year/month of origination and continuing monthly onwards until December 2023. 
+Each quarterly txt file contained monthly data pertaining to the loans originated at that particular fiscal quarter, including the loan's full history until December 2023, which is the last monthly date in the dataset. For example, **historical_data_time_2023Q3.txt** would contain data for each loan originated at August, September or October 2023, starting at the year/month of origination and continuing monthly onwards until December 2023. On average, there would be over 25 million records and almost half a million unique loans in each quarterly file, adding up to over 2.5 billion records and almost 47 million unique loans for all periods combined.
 
-The quarterly txt files were pipe-separated and contained no header, which was provided in a separate Excel file (**file_layout.xlsx**). This required reformatting the txt file into a dataframe with column names, a task handled by the **reformat_original_data()** function in src/prepare_data.py. The date column, **Monthly Reporting Period**, could be sorted as type integer, so there was no need to convert it to datetime in Python. However, it had to be converted to a string for the purpose of plotting, so it could be treated as a categorical variable - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of current year and January of next year.
+### 2. Data Wrangling
+The quarterly txt files were pipe-separated and contained no header, which was provided in a separate Excel file (**file_layout.xlsx**). This required reformatting the txt file into a dataframe with column names, a task handled by the **reformat_original_data()** function in src/prepare_data.py. The date column, **Monthly Reporting Period**, could be sorted as type integer, so there was no need to convert it to datetime in Python. However, it had to be converted to string for the purpose of plotting, so it could be treated as a categorical variable - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of current year and January of next year.
 
-> ###### Time series loan data file historical_data_time_2023Q3.txt in the original pipe-separated format
+> ###### Sample of time series loan data file in the original pipe-separated format
 > ![](img/freddie_mac/02_PipeSeparatedFile_screenshot.png)
 
-> ###### The same data reformatted and saved as historical_data_time_2023Q3.parquet
+> ###### Sample of the same data file reformatted and saved as parquet
 > ![](img/freddie_mac/03_ReformattedFile_screenshot.png)
 
 [comment]: # "Comment on the amount of data, count records and loans in each quarterly file, mention number of variables, estimate parquet file size (depends also on write method - pandas vs pyarrow)"
