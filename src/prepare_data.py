@@ -75,15 +75,14 @@ class FreddieMac:
         dataset_type: either 'Monthly Performance' or 'Origination' 
             (used to populate first column in summary)
         Note: quarterly_file_prefix will need to be changed for 'Origination' (remove '_time')
-        Runtime: About 61s vs. > 185s min using pandas
+        Runtime: About 1 min vs. over 3 min using pandas
         """
 
         summary_fname = dataset_type.replace(' ', '_') + '_Dataset_Summary'
-        summary_fname_parquet = summary_fname + '_pyarrow.parquet'
-        summary_fname_csv = summary_fname + '_pyarrow.csv'
+        summary_fname_parquet = summary_fname + '.parquet'
+        summary_fname_csv = summary_fname + '.csv'
 
         summary_columns = [
-            'Dataset Type',
             'Year-Quarter',
             'Row Count',
             'Unique Loan Count',
@@ -94,7 +93,6 @@ class FreddieMac:
 
         df0 = pd.DataFrame(columns=summary_columns)
         pa_schema = pa.schema([
-            pa.field('Dataset Type', pa.string()),
             pa.field('Year-Quarter', pa.string()),
             pa.field('Row Count', pa.int64()),
             pa.field('Unique Loan Count', pa.int64()),
@@ -122,7 +120,6 @@ class FreddieMac:
             total_loan_count += loan_count
 
             row_pylist = [{
-                'Dataset Type': dataset_type, 
                 'Year-Quarter': yyyyqq,
                 'Row Count': row_count,
                 'Unique Loan Count': loan_count,
@@ -134,20 +131,9 @@ class FreddieMac:
             end_time = time.perf_counter()
             print(f'    Finished processing {yyyyqq}, total duration: {end_time - start_time:0.2f}')
 
-            """
-            df_summary.update({
-                'Dataset Type': dataset_type, 
-                'Year-Quarter': yyyyqq,
-                'Row Count': row_count,
-                'Unique Loan Count': loan_count,
-                'Unique Date Count': date_count
-            })
-            """
-
         total_date_count = df_summary['Unique Date Count'][0]  # First file (1999Q1) has all the unique dates
 
         final_row_pylist = [{
-            'Dataset Type': dataset_type, 
             'Year-Quarter': 'ALL',
             'Row Count': total_row_count,
             'Unique Loan Count': total_loan_count,
@@ -167,7 +153,7 @@ class FreddieMac:
         df_summary_csv.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
 
 
-    def summarize_data_pyarrow_2(self, dataset_type='Monthly Performance'):
+    def summarize_data_pyarrow_collist(self, dataset_type='Monthly Performance'):
         """
         Summarize the time series data by counting records, loans and distinct dates
         in each quarterly file and in the whole dataset.
@@ -177,17 +163,16 @@ class FreddieMac:
         dataset_type: either 'Monthly Performance' or 'Origination' 
             (used to populate first column in summary)
         Note: quarterly_file_prefix will need to be changed for 'Origination' (remove '_time')
-        Runtime: About 61s (no significant difference vs. summarize_data_pyarrow())
+        Runtime: About 1 min - no significant difference vs. summarize_data_pyarrow()
         """
 
         summary_fname = dataset_type.replace(' ', '_') + '_Dataset_Summary'
-        summary_fname_parquet = summary_fname + '_2.parquet'
-        summary_fname_csv = summary_fname + '_2.csv'
+        summary_fname_parquet = summary_fname + '.parquet'
+        summary_fname_csv = summary_fname + '.csv'
         
         total_row_count, total_loan_count = 0, 0
 
         pa_schema = pa.schema([
-            pa.field('Dataset Type', pa.string()),
             pa.field('Year-Quarter', pa.string()),
             pa.field('Row Count', pa.int64()),
             pa.field('Unique Loan Count', pa.int64()),
@@ -196,7 +181,6 @@ class FreddieMac:
 
         files_to_process = [f for f in os.listdir(self.fm_dir) if f.startswith(self.quarterly_file_prefix) & f.endswith('.parquet')]
 
-        dataset_type_list = []
         yyyyqq_list = []
         row_count_list = []
         loan_count_list = []
@@ -216,7 +200,6 @@ class FreddieMac:
             loan_count = len(df[self.loancol].unique())
             date_count = len(df[self.datecol].unique())
 
-            dataset_type_list.append(dataset_type)
             yyyyqq_list.append(yyyyqq)
             row_count_list.append(row_count)
             loan_count_list.append(loan_count)
@@ -230,7 +213,6 @@ class FreddieMac:
 
         total_date_count = date_count_list[0]  # First file (1999Q1) has all the unique dates
 
-        dataset_type_list.append(dataset_type)
         yyyyqq_list.append('ALL')
         row_count_list.append(total_row_count)
         loan_count_list.append(total_loan_count)
@@ -238,7 +220,7 @@ class FreddieMac:
 
         df_summary = pa.Table.from_pydict(
             dict(
-                zip(pa_schema.names, (dataset_type_list, yyyyqq_list, row_count_list, loan_count_list, date_count_list))
+                zip(pa_schema.names, (yyyyqq_list, row_count_list, loan_count_list, date_count_list))
             ),
             schema=pa_schema
         )
@@ -268,7 +250,6 @@ class FreddieMac:
         summary_fname_csv = summary_fname + '.csv'
 
         summary_columns = [
-            'Dataset Type',
             'Year-Quarter',
             'Row Count',
             'Unique Loan Count',
@@ -299,7 +280,6 @@ class FreddieMac:
             total_loan_count += loan_count
 
             row_dict = {
-                'Dataset Type': dataset_type, 
                 'Year-Quarter': yyyyqq,
                 'Row Count': row_count,
                 'Unique Loan Count': loan_count,
@@ -319,7 +299,6 @@ class FreddieMac:
         total_date_count = df_summary['Unique Date Count'].values[0]
 
         final_row_dict = {
-            'Dataset Type': dataset_type, 
             'Year-Quarter': 'ALL',
             'Row Count': total_row_count,
             'Unique Loan Count': total_loan_count,
