@@ -2,6 +2,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.csv as pacsv
 import pyarrow.parquet as pq
+import numpy as np
 import os
 import time
 from convert_date import *
@@ -75,7 +76,7 @@ class FreddieMac:
         dataset_type: either 'Monthly Performance' or 'Origination' 
             (used to populate first column in summary)
         Note: quarterly_file_prefix will need to be changed for 'Origination' (remove '_time')
-        Runtime: About 1 min vs. over 3 min using pandas
+        Runtime: About 1 min vs. > 3 min using pandas
         """
 
         summary_fname = dataset_type.replace(' ', '_') + '_Dataset_Summary'
@@ -153,7 +154,7 @@ class FreddieMac:
         df_summary_csv.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
 
 
-    def summarize_data_pyarrow_collist(self, dataset_type='Monthly Performance'):
+    def summarize_data_pyarrow_2(self, dataset_type='Monthly Performance'):
         """
         Summarize the time series data by counting records, loans and distinct dates
         in each quarterly file and in the whole dataset.
@@ -163,7 +164,7 @@ class FreddieMac:
         dataset_type: either 'Monthly Performance' or 'Origination' 
             (used to populate first column in summary)
         Note: quarterly_file_prefix will need to be changed for 'Origination' (remove '_time')
-        Runtime: About 1 min - no significant difference vs. summarize_data_pyarrow()
+        Runtime: About 1 min (no significant difference vs. summarize_data_pyarrow())
         """
 
         summary_fname = dataset_type.replace(' ', '_') + '_Dataset_Summary'
@@ -316,6 +317,7 @@ class FreddieMac:
 
 
     def prepare_date_list(
+        self,
         min_extract_date: int,
         max_extract_date: int
     ):
@@ -346,6 +348,157 @@ class FreddieMac:
         ym_list.reverse()
 
         return ym_list
+
+
+    def summarize_loans_pyarrow(self):
+        """
+        Prepare a summary of loan distribution by origination quarter at each date.
+        Runtime: about 33 s (5 times faster than using pandas)
+        NOTE: First reporting date for a given loan may not necessarily be the date
+        of origination - could identify number of missing dates for those loans.
+        """
+
+        summary_fname = 'Loan_Distribution_By_Origination_Quarter'
+        summary_fname_parquet = summary_fname + '.parquet'
+        summary_fname_csv = summary_fname + '.csv'
+
+        pd_pa_dtype_map = {
+            str: pa.string(),
+            int: pa.int64(),
+            'string': pa.string(),
+            'Int64': pa.int64(),
+            'float64': pa.float64()
+        }
+
+        cols_to_extract = {
+            self.loancol: str,
+            self.datecol : 'Int64'
+        }
+        selected_cols = list(cols_to_extract.keys())
+
+        pa_schema = pa.schema([
+            pa.field(self.loancol, pd_pa_dtype_map[cols_to_extract[self.loancol]]),
+            pa.field(self.datecol, pd_pa_dtype_map[cols_to_extract[self.datecol]])
+        ])
+
+        files_to_process = [f for f in os.listdir(self.fm_dir) if f.startswith(self.quarterly_file_prefix) & f.endswith('.parquet')]
+        
+        first_file = min(files_to_process)
+        last_file = max(files_to_process)
+        df_first = pq.read_table(os.path.join(self.fm_dir, first_file), columns=selected_cols)
+        df_last = pq.read_table(os.path.join(self.fm_dir, last_file), columns=selected_cols)
+        min_extract_date = np.min(df_first[self.datecol])
+        max_extract_date = np.max(df_last[self.datecol])
+
+        ym_list = self.prepare_date_list(min_extract_date, max_extract_date)
+
+        # ym_list is sorted reverse-chronologically
+        ym_list_str = list(map(str, ym_list))
+
+        yq_col = 'Year-Quarter'
+        cols = [yq_col] + ym_list_str
+
+        pa_summary_schema_list = [pa.field(yq_col, pa.string())]
+        for col in ym_list_str:
+            pa_summary_schema_list.append(pa.field(col, pa.int64()))
+        pa_summary_schema = pa.schema(pa_summary_schema_list)
+
+        df0 = pd.DataFrame(columns=cols)
+        df_summary = pa.Table.from_pandas(df0, schema=pa_summary_schema)
+
+        start_time = time.perf_counter()
+
+        for fname in files_to_process:
+
+            print(f'Extracting loan counts from {fname}')
+            yyyyqq = fname.replace(self.quarterly_file_prefix, '').replace('.parquet', '')
+            fpath = os.path.join(self.fm_dir, fname)
+            fr = pq.read_table(fpath, columns=selected_cols)
+            grp = fr.group_by(self.datecol).aggregate([(self.loancol, 'count')])
+
+            row_dict = {yq_col: [yyyyqq]}
+            for batch in grp.to_batches():
+                d = batch.to_pydict()
+                for c1, c2 in zip(d[self.datecol], d[self.loancol +'_count']):
+                    row_dict.update({str(c1): [c2]})
+            
+            fullrow_dict = {}
+            for field in pa_summary_schema.names:
+                if field in row_dict:
+                    fullrow_dict[field] = row_dict[field]
+                else:
+                    fullrow_dict[field] = [0]
+            row = pa.Table.from_pydict(fullrow_dict, schema=pa_summary_schema)
+
+            df_summary = pa.concat_tables([df_summary, row])
+        
+        end_time = time.perf_counter()
+        print(f'    Finished processing all quarterly files, total duration: {end_time - start_time:0.2f}')
+
+        print(f'Saving {summary_fname_parquet} and {summary_fname_csv}')
+        pq.write_table(df_summary, os.path.join(self.fm_dir, summary_fname_parquet))
+        df_summary_pd = df_summary.to_pandas()
+        df_summary_pd.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+
+
+    def summarize_loans_pandas(self):
+        """
+        Prepare a summary of loan distribution by origination quarter at each date.
+        Runtime: about 165 s
+        NOTE: First reporting date for a given loan may not necessarily be the date
+        of origination - could identify number of missing dates for those loans.
+        """
+
+        summary_fname = 'Loan_Distribution_By_Origination_Quarter'
+        summary_fname_parquet = summary_fname + '.parquet'
+        summary_fname_csv = summary_fname + '.csv'
+
+        cols_to_extract = {
+            self.loancol: str,
+            self.datecol : 'Int64'
+        }
+        selected_cols = list(cols_to_extract.keys())
+
+        files_to_process = [f for f in os.listdir(self.fm_dir) if f.startswith(self.quarterly_file_prefix) & f.endswith('.parquet')]
+        
+        first_file = min(files_to_process)
+        last_file = max(files_to_process)
+        df_first = pd.read_parquet(os.path.join(self.fm_dir, first_file), columns=selected_cols)
+        df_last = pd.read_parquet(os.path.join(self.fm_dir, last_file), columns=selected_cols)
+        min_extract_date = int(df_first[self.datecol].min())
+        max_extract_date = int(df_last[self.datecol].max())
+
+        ym_list = self.prepare_date_list(min_extract_date, max_extract_date)
+
+        # ym_list is sorted reverse-chronologically
+        ym_list_str = list(map(str, ym_list))
+
+        yq_col = 'Year-Quarter'
+        cols = [yq_col] + ym_list_str
+        df_summary = pd.DataFrame(columns=cols)
+
+        start_time = time.perf_counter()
+
+        for fname in files_to_process:
+
+            print(f'Extracting loan counts from {fname}')
+            yyyyqq = fname.replace(self.quarterly_file_prefix, '').replace('.parquet', '')
+            fpath = os.path.join(self.fm_dir, fname)
+            fr = pd.read_parquet(fpath, columns=selected_cols)
+            grp = fr.groupby(self.datecol)[self.loancol].count()
+            row = pd.DataFrame(columns=cols, index=[0])
+            row[yq_col] = yyyyqq
+            for key in grp.index:
+                row[str(key)] = grp[key]
+            row = row.fillna(0)
+            df_summary = pd.concat([df_summary, row])
+            df_summary = df_summary.reset_index(drop=True)
+        
+        end_time = time.perf_counter()
+        print(f'    Finished processing all quarterly files, total duration: {end_time - start_time:0.2f}')
+
+        df_summary.to_parquet(os.path.join(self.fm_dir, summary_fname_parquet))
+        df_summary.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
 
 
     def extract_monthly_by_month_pyarrow(
@@ -390,8 +543,8 @@ class FreddieMac:
         pyarrow_schema = pa.schema([
             pa.field(self.loancol, pd_pa_dtype_map[cols_to_extract[self.loancol]]),
             pa.field(self.datecol, pd_pa_dtype_map[cols_to_extract[self.datecol]]),
-            pa.field(varname, pd_pa_dtype_map[vartype])]
-        )
+            pa.field(varname, pd_pa_dtype_map[vartype])
+        ])
 
         ym_list = self.prepare_date_list(self.min_extract_date, self.max_extract_date)
 
@@ -423,7 +576,7 @@ class FreddieMac:
 
             start_time = time.perf_counter()
 
-            dname = self.monthly_file_prefix + str(ym) + '_' + varname_fname + '.parquet'
+            dname = self.monthly_file_prefix + str(ym) + '_' + varname_fname + '_pandas.parquet'
             print(f'    Saving {dname}')
             pq.write_table(df, os.path.join(var_dir, dname))
 
