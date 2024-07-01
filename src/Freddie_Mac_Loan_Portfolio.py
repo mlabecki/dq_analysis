@@ -47,7 +47,7 @@ def setup_main_area():
     col3.markdown(
     """<a href='Data_Quality_Analysis'>
        <img src='data:image/jpg; base64, {}' width='600'></a>"""
-       .format(base64.b64encode(open('../img/freddie_mac/Page1_DataQualityAnalysis_w600.jpg', 'rb').read()).decode()), unsafe_allow_html=True)
+       .format(base64.b64encode(open('img/freddie_mac/Page1_DataQualityAnalysis_w600.jpg', 'rb').read()).decode()), unsafe_allow_html=True)
 
     st.container(height=1, border=False)
 
@@ -57,7 +57,7 @@ def setup_main_area():
     col3.markdown(
     """<a href='Origination_Analysis'>
        <img src='data:image/jpg; base64, {}' width='600'></a>"""
-       .format(base64.b64encode(open('../img/freddie_mac/Page2_OriginationAnalysis_w600.jpg', 'rb').read()).decode()), unsafe_allow_html=True)
+       .format(base64.b64encode(open('img/freddie_mac/Page2_OriginationAnalysis_w600.jpg', 'rb').read()).decode()), unsafe_allow_html=True)
 
 
 if __name__ == '__main__':
