@@ -7,7 +7,7 @@ import os
 import time
 from convert_date import *
 from mapping_freddie_mac import *
-from prepare_settings import ReadYaml
+from prepare_settings import ReadSettings
 
 # Note: pyarrow.csv and pyarrow.parquet must be imported separately from pyarrow,
 # otherwise pyarrow.csv and pyarrow.parquet may not be recognized as valid modules
@@ -16,12 +16,13 @@ class FreddieMac:
     
     def __init__(self):
         
-        self.conf = ReadYaml()
+        self.conf = ReadSettings()
         self.fm_dir = self.conf.freddie_mac_dir
         self.layout_file = self.conf.layout_file
         self.quarterly_file_prefix = self.conf.quarterly_file_prefix
         self.monthly_file_prefix = self.conf.monthly_file_prefix
         self.dq_subdir = self.conf.dq_subdir
+        self.summary_dir = self.conf.summary_dir
         self.loancol = self.conf.loancol
         self.datecol = self.conf.datecol
         self.min_extract_date = self.conf.min_extract_date
@@ -148,10 +149,10 @@ class FreddieMac:
         print(f'    Finished summarizing dataset, total duration: {end_time_global - start_time_global:0.2f}')
 
         # Write summary table to parquet
-        pq.write_table(df_summary, os.path.join(self.fm_dir, summary_fname_parquet))
+        pq.write_table(df_summary, os.path.join(self.summary_dir, summary_fname_parquet))
         # Convert summary table to pandas df before writing to csv (pyarrow seems to corrupt the csv output)
         df_summary_csv = df_summary.to_pandas()
-        df_summary_csv.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+        df_summary_csv.to_csv(os.path.join(self.summary_dir, summary_fname_csv), index=False)
 
 
     def summarize_data_pyarrow_2(self, dataset_type='Monthly Performance'):
@@ -230,10 +231,10 @@ class FreddieMac:
         print(f'    Finished summarizing dataset, total duration: {end_time_global - start_time_global:0.2f}')
 
         # Write summary table to parquet
-        pq.write_table(df_summary, os.path.join(self.fm_dir, summary_fname_parquet))
+        pq.write_table(df_summary, os.path.join(self.summary_dir, summary_fname_parquet))
         # Convert summary table to pandas df before writing to csv (pyarrow seems to corrupt the csv output)
         df_summary_csv = df_summary.to_pandas()
-        df_summary_csv.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+        df_summary_csv.to_csv(os.path.join(self.summary_dir, summary_fname_csv), index=False)
 
 
     def summarize_data_pandas(self, dataset_type='Monthly Performance'):
@@ -249,7 +250,7 @@ class FreddieMac:
         summary_fname = dataset_type.replace(' ', '_') + '_Dataset_Summary'
         summary_fname_parquet = summary_fname + '.parquet'
         summary_fname_csv = summary_fname + '.csv'
-
+        
         summary_columns = [
             'Year-Quarter',
             'Row Count',
@@ -312,8 +313,8 @@ class FreddieMac:
         print(f'    Finished summarizing dataset, total duration: {end_time_global - start_time_global:0.2f}')
 
         # Write summary table to disk 
-        df_summary.to_parquet(os.path.join(self.fm_dir, summary_fname_parquet))
-        df_summary.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+        df_summary.to_parquet(os.path.join(self.summary_dir, summary_fname_parquet))
+        df_summary.to_csv(os.path.join(self.summary_dir, summary_fname_csv), index=False)
 
 
     def prepare_date_list(
@@ -361,7 +362,7 @@ class FreddieMac:
         summary_fname = 'Loan_Distribution_By_Origination_Quarter'
         summary_fname_parquet = summary_fname + '.parquet'
         summary_fname_csv = summary_fname + '.csv'
-
+        
         pd_pa_dtype_map = {
             str: pa.string(),
             int: pa.int64(),
@@ -419,8 +420,8 @@ class FreddieMac:
             row_dict = {yq_col: [yyyyqq]}
             for batch in grp.to_batches():
                 d = batch.to_pydict()
-                for c1, c2 in zip(d[self.datecol], d[self.loancol +'_count']):
-                    row_dict.update({str(c1): [c2]})
+                for col1, col2 in zip(d[self.datecol], d[self.loancol +'_count']):
+                    row_dict.update({str(col1): [col2]})
             
             fullrow_dict = {}
             for field in pa_summary_schema.names:
@@ -436,9 +437,9 @@ class FreddieMac:
         print(f'    Finished processing all quarterly files, total duration: {end_time - start_time:0.2f}')
 
         print(f'Saving {summary_fname_parquet} and {summary_fname_csv}')
-        pq.write_table(df_summary, os.path.join(self.fm_dir, summary_fname_parquet))
+        pq.write_table(df_summary, os.path.join(self.summary_dir, summary_fname_parquet))
         df_summary_pd = df_summary.to_pandas()
-        df_summary_pd.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+        df_summary_pd.to_csv(os.path.join(self.summary_dir, summary_fname_csv), index=False)
 
 
     def summarize_loans_pandas(self):
@@ -452,7 +453,7 @@ class FreddieMac:
         summary_fname = 'Loan_Distribution_By_Origination_Quarter'
         summary_fname_parquet = summary_fname + '.parquet'
         summary_fname_csv = summary_fname + '.csv'
-
+        
         cols_to_extract = {
             self.loancol: str,
             self.datecol : 'Int64'
@@ -497,8 +498,8 @@ class FreddieMac:
         end_time = time.perf_counter()
         print(f'    Finished processing all quarterly files, total duration: {end_time - start_time:0.2f}')
 
-        df_summary.to_parquet(os.path.join(self.fm_dir, summary_fname_parquet))
-        df_summary.to_csv(os.path.join(self.fm_dir, summary_fname_csv), index=False)
+        df_summary.to_parquet(os.path.join(self.summary_dir, summary_fname_parquet))
+        df_summary.to_csv(os.path.join(self.summary_dir, summary_fname_csv), index=False)
 
 
     def extract_monthly_by_month_pyarrow(

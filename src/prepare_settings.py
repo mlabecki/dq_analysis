@@ -12,6 +12,7 @@ class ReadSettings:
         self.quarterly_file_prefix = main_settings['quarterly_file_prefix']
         self.monthly_file_prefix = main_settings['monthly_file_prefix']
         self.dq_subdir = main_settings['dq_subdir']
+        self.summary_dir = os.path.join(self.freddie_mac_dir, 'summaries')
         self.min_extract_date = main_settings['min_extract_date']
         self.max_extract_date = main_settings['max_extract_date']
         self.datecol = main_settings['datecol']

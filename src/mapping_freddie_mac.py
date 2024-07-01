@@ -10,8 +10,7 @@ main_settings = {
     'loancol': 'Loan Sequence Number'
 }
 upb_map = {
-    'parquet_name': 'Current_Actual_UPB_201701_202312_DQ.parquet',
-    'csv_name': 'Current_Actual_UPB_201701_202312_DQ.csv',
+    'fname': 'Current_Actual_UPB_201701_202312_DQ.parquet',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 2e7,
     'nullcount_y_max': 2e7,
@@ -26,8 +25,7 @@ upb_map = {
     'pct_y_max': 700000
 }
 ltv_map = {
-    'parquet_name': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.parquet',
-    'csv_name': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.csv',
+    'fname': 'Estimated_Loan-to-Value_ELTV_201704_202312_DQ.parquet',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 2e7,
     'nullcount_y_max': 2e7,
@@ -42,8 +40,7 @@ ltv_map = {
     'pct_y_max': 105
 }
 exp_map = {
-    'parquet_name': 'Total_Expenses_201701_202312_DQ.parquet',
-    'csv_name': 'Total_Expenses_201701_202312_DQ.csv',
+    'fname': 'Total_Expenses_201701_202312_DQ.parquet',
     'totalcount_y_max': 2e7,
     'fillcount_y_max': 10000,
     'nullcount_y_max': 2e7,
@@ -78,12 +75,11 @@ Note: Only populated for April 2017 and following periods.""",
 reflects the mortgage ending balance as reported by the servicer for the 
 corresponding monthly reporting period. For fixed rate mortgages, this UPB 
 is derived from the mortgage balance as reported by the servicer and includes 
-any scheduled and unscheduled principal reductions applied to the mortgage.
-For mortgages with loan modifications or payment deferrals, the current
-actual unpaid principal balance could include non-interest bearing
-"deferred" amounts. The Current Actual UPB will equal the sum of the
-Current Interest-Bearing UPB (the amortizing principal balance of the
-mortgage) and the Current Non-Interest Bearing UPB.""",
+any scheduled and unscheduled principal reductions.
+For mortgages with loan modifications or payment deferrals, the Current
+Actual UPB could include non-interest bearing "deferred" amounts. The Current 
+Actual UPB equals the sum of the Current Interest-Bearing UPB (the amortizing 
+principal balance of the mortgage) and the Current Non-Interest Bearing UPB.""",
     'Total Expenses': """Total Expenses will include allowable
 expenses that Freddie Mac bears in the process of acquiring, maintaining 
 and/ or disposing a property (excluding selling expenses, which are subtracted
@@ -129,42 +125,3 @@ df_dq_cols = [
     'Max Value',
     'Mean Value'
 ]
-
-# CSS
-header_style = """
-<style>
-        #title {
-        text-align: center;
-        vertical-align: top;
-        font-face: serif;
-        font-size: 36px;
-        font-weight: bold;
-        color: black;
-    }
-</style>
-"""
-widget_label_style = """
-<style>
-    div[class*="stSelectbox"] label p {
-        font-size: 20px;
-        font-weight: bold;
-        color: black;
-    }
-    .stSelectbox > div {font-size: 16px;}
-    div[class*="stRadio"] label p {
-       font-size: 18px;
-       color: black;
-    }
-</style>
-"""
-variable_description_style = """
-<style>
-    div[class*="stMarkdown"] {
-        font-size: 20px;
-        font-weight: bold;
-        font-face: serif;
-        color: #606060;
-    }
-    [class*="stWrite"] {
-</style> 
-"""

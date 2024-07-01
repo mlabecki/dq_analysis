@@ -34,11 +34,11 @@ varcol_fname = varcol.replace(' ', '_').replace(')', '').replace('(', '')
 var_dir = os.path.join(dir, varcol_fname)
 if not os.path.exists(var_dir):
     os.makedirs(var_dir)
-quarterly_file_prefix = 'historical_data_time_'  # in yaml
+quarterly_file_prefix = 'historical_data_time_'
 
 col_type = 'float64'
-datecol = 'Monthly Reporting Period'    # in yaml
-loancol = 'Loan Sequence Number'        # in yaml
+datecol = 'Monthly Reporting Period'
+loancol = 'Loan Sequence Number'
 cols_to_extract = {
     loancol: str,
     datecol : 'Int64',

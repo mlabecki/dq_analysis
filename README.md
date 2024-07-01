@@ -1,10 +1,10 @@
 # dq_analysis - Data Quality Analysis
-The purpose of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes. This could be helpful in the detection of possible temporal discontinuities and other anomalies related to data quality. Please click the screenshot below to access the dashboard app on Streamlit.
+The main goal of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes, which could be helpful in the detection of possible temporal discontinuities and other anomalies related to data quality. The Freddie Mac loan dataset, chosen for this purpose, was also analyzed from the point of view of portfolio loan counts by reporting month and by origination date, the main intention being to help the user understand how the data is organized. Please click the screenshot below to access the dashboard app on Streamlit.
 
 [<img src='img/freddie_mac/00_AppScreenshot_1000x432.jpg'>](https://mlabecki-dq-analysis-srcapp-dq-freddie-mac-aeizer.streamlit.app)
 
 ### 1. Dataset
-Freddie Mac single-family loan-level dataset, chosen for this project, was downloaded from https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset. The data on the website was organized into 99 quarterly zip files starting from 1999 Q1 and ending at 2023 Q3. Each zip archive, **historical_data_yyyymm.zip**, would contain a loan origination data file, named **historical_data_yyyymm.txt**, and a time series loan data file, named **historical_data_time_yyyymm.txt**. Only the time series data was used in this project. Please note that access to the Freddie Mac data download zone requires authentication and - since I could not identify a csrf token normally used in the login protocol in this case - I was not able to automate the download process at this point.
+The Freddie Mac single-family loan-level dataset was downloaded from https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset. The data on the website was organized into 99 quarterly zip files starting from 1999 Q1 and ending at 2023 Q3. Each zip archive, **historical_data_yyyymm.zip**, would contain a loan origination data file, named **historical_data_yyyymm.txt**, and a time series loan data file, named **historical_data_time_yyyymm.txt**. Only the time series data was used in this project. Please note that access to the Freddie Mac data download zone requires authentication and - since I could not identify a csrf token normally used in the login protocol in such cases - I was not able to automate the download process at this point.
 
 > ###### Screenshot of single-family quarterly loan dataset links at Freddie Mac download site
 > ![](img/freddie_mac/01_StandardDataSet_screenshot_600x160.png)
@@ -27,7 +27,7 @@ Eventually, the monthly data was extracted by looping over all quarterly files i
 > ###### Sample of monthly loan data file for Current Actual Unpaid Balance (UPB) at January 2017
 > ![](img/freddie_mac/04_UPB_201701_File.png)
 
-All extract files, both quarterly and monthly, were saved on disk in the parquet format - initially using pandas and later with pyarrow. The latter offered a speed improvement by a factor of 1.7-3.0 while also reducing almost two-fold the size of parquet files on disk.
+All extract files, both quarterly and monthly, were saved on disk in the parquet format - initially using pandas and later with pyarrow. The latter offered a speed improvement by a factor of 1.7-5.0, depending on the task, while also reducing almost two-fold the size of parquet output on disk.
 
 It was not necessary to convert the date column, **Monthly Reporting Period**, from integer to datetime for the purpose of plotting, as the sort order would be preserved for both data types. However, the column had to be converted from integer to string so it could be treated as a categorical variable - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of one year and January of the following year. Conversion to string would also be faster and easier to implement than conversion to datetime.
 
