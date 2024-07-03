@@ -46,4 +46,4 @@ The default range of origination - 1999Q1 to 2023Q3 - can be modified by selecti
 Additional input features include the choice of gridlines and the selection of the upper limit for the y-axis using a slider with loan count values incremented by 50,000.
 
 ### 5. Feedback and Contact Info
-Please feel free to send me any feedback regarding this project and suggestions for code and/or app interface improvements. You can contact me through Github or via email labecki.marek@yahoo.com. Thank you for your interest and consideration.
+Please feel free to send me any feedback regarding this project and suggestions for code and/or dashboard app improvements. You can contact me through Github or via email labecki.marek@yahoo.com. Thank you for your interest and consideration.

@@ -21,7 +21,7 @@ def setup_main_area():
         
     par1 = """Hello and thank you for coming here."""
     
-    par2 = """The purpose of this app is to provide a simple interactive interface that could help 
+    par2 = """The purpose of this app is to provide a simple interactive dashboard that could help 
     the user gain an insight into the Freddie Mac single-family loan portfolio and suggest how it
     could be analyzed from the data quality point of view. The dataset was downloaded from 
     <a href='https://www.freddiemac.com/research/datasets/sf-loanlevel-dataset'>
