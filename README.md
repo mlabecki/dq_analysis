@@ -1,4 +1,4 @@
-# dq_analysis - Data Quality Analysis
+# dq_analysis - Freddie Mac Loan Portfolio Analysis
 The main goal of this project was to create a simple interactive dashboard visualizing the properties of time-dependent distributions of data such as loan attributes, which could be helpful in the detection of possible temporal discontinuities and other anomalies related to data quality. The Freddie Mac loan dataset, chosen for this purpose, was also analyzed from the point of view of portfolio loan counts by reporting month and by origination date, the main intention being to help the user understand how the data is organized. Please click the screenshot below to access the dashboard app on Streamlit.
 
 [<img src='img/freddie_mac/Page0_FreddieMacLoanPortfolio_w1000.jpg'>](https://mlabecki-dq-analysis-srcfreddie-mac-loan-portfolio-1a4tv6.streamlit.app/)
@@ -27,10 +27,23 @@ Eventually, the monthly data was extracted by looping over all quarterly files i
 > ###### Sample of monthly loan data file for Current Actual Unpaid Balance (UPB) at January 2017
 > ![](img/freddie_mac/04_UPB_201701_File.png)
 
-All extract files, both quarterly and monthly, were saved on disk in the parquet format - initially using pandas and later with pyarrow. The latter offered a speed improvement by a factor of 1.7-5.0, depending on the task, while also reducing almost two-fold the size of parquet output on disk.
+All extract files, both quarterly and monthly, were saved on disk in the parquet format - initially using pandas and later with pyarrow. The latter offered a speed improvement by a factor ranging between 1.7 and 5.0, depending on the task, while also reducing almost two-fold the size of parquet output on disk.
 
 It was not necessary to convert the date column, **Monthly Reporting Period**, from integer to datetime for the purpose of plotting, as the sort order would be preserved for both data types. However, the column had to be converted from integer to string so it could be treated as a categorical variable - otherwise we would see step-wise jumps in the temporal profiles of loan attributes between December of one year and January of the following year. Conversion to string would also be faster and easier to implement than conversion to datetime.
 
+### 3. Data Quality Analysis
+For this analysis, three loan attributes (variables) were selected: Current Actual Unpaid Balance (UPB), Estimated Loan-to-Value (ELTV), and Total Expenses. The selection serves mainly as a proof of concept and is not meant to be exhaustive. The Data Quality Analysis page includes a plot of percentile distributions and a plot of one of the metrics (such as fill rate) for the selected variable as functions of the reporting date (or **Monthly Reporting Period**). It also provides a brief variable description, based on the original Freddie Mac documentation.
 
+The sidebar menu offers the user the option of modifying the reporting range by choosing the Start Date and the End Date from a drop-down list. The initial lists are populated such that the maximum Start Date is one month less than the maximum End Date (i.e. 202311), and the minimum End Date is one month greater than the minimum Start Date (i.e. 201702 for UPB or Total Expenses and 201705 for ELTV). If the user modifies the Start Date such that it is greater than or equal to the End Date, then the latter is reset to the maximum possible value (202312); likewise, if the user modifies the End Date such that it is less than or equal to the Start Date, then the latter is automatically reset to the minimum possible value (201701 for UPB or Total Expenses and 201704 for ELTV). The x-axis tick spacing is automatically adjusted when the reporting range changes.
 
-[comment]: # "Comment on the variables selected"
+Additional input features include the choice of gridlines and the location of the percentile plot legend.
+
+### 4. Origination Analysis
+This analysis serves mainly to help understand better how the Freddie Mac loan dataset is structured. The Origination Analysis page presents a bar plot summarizing the loan counts as observed either at a particular monthly reporting date or throughout the reporting history. The loan counts are grouped by the year and quarter of origination, which is how the original Freddie Mac data is organized. For convenience, the user can use either a slider or a drop-down list to pick a single reporting date, or choose all reporting dates, which would then plot the total number of loans originated at each particular year and quarter. 
+
+The default range of origination - 1999Q1 to 2023Q3 - can be modified by selecting the Start Quarter and the End Quarter from their respective drop-down lists in the sidebar. It is worth noting that, at any given reporting date, there would be no loans originated later than that date; hence the End Quarter is normally set to the value corresponding to the last non-zero loan count at that reporting date, which can be changed by unchecking the Auto Adjust End Quarter box. If the Start Quarter is greater than the End Quarter or greater than the quarter of the last non-zero loan count for the given reporting date, then the Start Quarter is automatically reset to its minimum value of 1999Q1.
+
+Additional input features include the choice of gridlines and the selection of the upper limit for the y-axis using a slider with loan count values incremented by 50,000.
+
+### 5. Feedback and Contact Info
+Please feel free to send me any feedback regarding this project and suggestions for code and/or app interface improvements. You can contact me through Github or via email labecki.marek@yahoo.com. Thank you for your interest and consideration.
