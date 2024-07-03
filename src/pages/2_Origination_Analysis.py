@@ -193,17 +193,22 @@ def setup_sidebar_2():
         end_quarter = sidebar_col2.selectbox('**End Quarter**', reverse_quarters_nomin, disabled=False)
 
     if date_str != 'All Dates':
-        if (start_quarter > end_quarter) | (start_quarter > last_nonzero_quarter[date_str]):
-            start_quarter = last_nonzero_quarter[date_str]
-            end_quarter = last_nonzero_quarter[date_str]
+        if start_quarter > last_nonzero_quarter[date_str]:
+            start_quarter = min_quarter
+            if auto_end_quarter:
+                end_quarter = last_nonzero_quarter[date_str]
+        elif start_quarter > end_quarter:
+            start_quarter = min_quarter
+            if auto_end_quarter:
+                end_quarter = last_nonzero_quarter[date_str]
     else:
-        if (start_quarter > end_quarter):
-            start_quarter = max_quarter
+        if start_quarter > end_quarter:
+            start_quarter = min_quarter
             end_quarter = max_quarter
 
     st.sidebar.container(height=2, border=False)  # spacer to adjust height
 
-    # End quarter auto adjustment checkbox button
+    # Set y-axis upper limit checkbox button
     set_y_max = st.sidebar.checkbox(
         '**Set y-Axis Upper Limit**'
     )
