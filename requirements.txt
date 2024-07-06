@@ -14,14 +14,12 @@ blinker==1.8.2
     # via streamlit
 cachetools==5.3.3
     # via streamlit
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via streamlit
-colorama==0.4.6
-    # via click
 contourpy==1.2.1
     # via matplotlib
 cycler==0.12.1
